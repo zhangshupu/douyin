@@ -1,11 +1,12 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" @click="clickDH($event)">
     <div class="top">{{list.name}}</div>
     <div class="img">
       <!-- <img src="../../assets/tp.jpg" alt=""> -->
       <iframe frameborder="0" src="https://v.qq.com/txp/iframe/player.html?autoPlay=true&vid=w0357ptsfjx"
         allowFullScreen="true" allowtransparency class="video"></iframe>
       <p>@一禅经典录语</p>
+      <em :class="['danmu',(index%2)?'danmu1':'']" v-for="(item,index) in danmuArr" :key="index">{{item.text}}</em>
     </div>
     <div class="main">
       <p v-html="list.title"></p>
@@ -59,6 +60,11 @@
         <span @click="fabu(value)">发布</span>
       </div>
     </div>
+    <div class="xing" ref="xing" v-if="isxingshow" :style="style">
+      <em v-for="(item,index) in imgList" :key="index">
+        {{item}}
+      </em>
+    </div>
   </div>
 </template>
 
@@ -73,12 +79,36 @@
     data() {
       return {
         value: '',
-        cont: 5
+        cont: 5,
+        time: 0,
+        imgList: [],
+        style: {
+          top: '',
+          left: ''
+        },
+        danmuArr: [],
+        isxingshow: false
       }
     },
     mounted() {
-      this.scrollFn()
-      this.getData()
+      this.scrollFn();
+      this.getData();
+      let a = -2;
+      let b = -1;
+      setInterval(() => {
+        a += 2;
+        b += 2;
+        this.danmuArr = [];
+        if (this.list.list[a] && this.list.list[b]) {
+          this.danmuArr.push(this.list.list[a])
+          this.danmuArr.push(this.list.list[b])
+        } else {
+          a = 0;
+          b = 1;
+          this.danmuArr.push(this.list.list[a])
+          this.danmuArr.push(this.list.list[b])
+        }
+      }, 3000)
     },
     computed: {
       ...mapState({
@@ -102,6 +132,7 @@
           }
         }
       }
+
     },
     methods: {
       ...mapActions({
@@ -129,10 +160,7 @@
           this.scroll.on('touchEnd', (pos) => {
             // 下拉动作
             if (pos.y > 50) {
-              // this.getData()
-              // this.cont = 5
-              // this.scroll.refresh();
-              // console.log("下拉刷新成功")
+
             }
             //上拉加载 总高度>上拉的高度+30 触发加载更多
             if (this.scroll.maxScrollY > pos.y + 30) {
@@ -144,6 +172,26 @@
           })
         });
       },
+      clickDH(e) {
+        this.isxingshow = true
+        let time2 = +new Date()
+        if (time2 - this.time < 300) {
+          this.style = {
+            top: `${e.pageY-50}px`,
+            left: `${e.pageX-50}px`,
+          }
+          this.imgList.push('♥')
+          this.time = new Date()
+          setTimeout(() => {
+            this.isxingshow = false
+            this.imgList = []
+          }, 2000)
+        } else {
+          this.isxingshow = false
+          this.imgList = []
+          this.time = new Date()
+        }
+      }
     }
   }
 </script>
@@ -175,6 +223,33 @@
         display: block;
         z-index: 10;
       }
+    }
+
+    .danmu {
+      padding: .05rem .3rem;
+      background: rgba(255, 0, 0, .5);
+      position: absolute;
+      right: 0;
+      top: .2rem;
+      color: #fff;
+      transform: translateX(100%);
+      animation: danmu 3s linear infinite forwards;
+    }
+
+    .danmu1 {
+      right: 0;
+      top: .8rem;
+      animation: danmu 3s linear 1s infinite forwards;
+    }
+  }
+
+  @keyframes danmu {
+    0% {
+      transform: translateX(100%)
+    }
+
+    100% {
+      transform: translateX(-400px)
     }
   }
 
@@ -250,7 +325,6 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-
     transition: all .3s;
 
     >p {
@@ -351,5 +425,39 @@
 
   .box1 {
     bottom: 0;
+  }
+
+  .xing {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    opacity: 1;
+
+    >em {
+      position: absolute;
+      font-size: 3rem;
+      color: #f00;
+      float: left;
+      top: -1.6rem;
+      left: .04rem;
+      animation: xing 1s forwards;
+    }
+  }
+
+  @keyframes xing {
+    0% {
+      opacity: 1;
+      transform: translateY(0px) scale(1)
+    }
+
+    30% {
+      opacity: .3;
+      transform: translateY(-30px) scale(1.3)
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(-50px) scale(1)
+    }
   }
 </style>
