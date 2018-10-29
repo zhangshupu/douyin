@@ -2,7 +2,9 @@
   <div class="recommend">
     <div class="top">{{list.name}}</div>
     <div class="img">
-      <img src="../../assets/tp.jpg" alt="">
+      <!-- <img src="../../assets/tp.jpg" alt=""> -->
+      <iframe frameborder="0" src="https://v.qq.com/txp/iframe/player.html?autoPlay=true&vid=w0357ptsfjx"
+        allowFullScreen="true" allowtransparency class="video"></iframe>
       <p>@一禅经典录语</p>
     </div>
     <div class="main">
@@ -42,7 +44,7 @@
               <dd>
                 <h2>@{{items.name}}</h2>
                 <p>{{items.text}}</p>
-                <h3>{{items.time}}</h3>
+                <h3 v-text="changeTime(items.time)"></h3>
               </dd>
               <span @click="changeListDianzan(ind)">
                 <img src="../../assets/images/xing_01.gif" alt="">
@@ -81,7 +83,25 @@
     computed: {
       ...mapState({
         list: store => store.index.list
-      })
+      }),
+      changeTime(time) {
+        return function (time) {
+          let newdata = +new Date
+          if ((newdata - time) / 1000 / 60 > 2) {
+            if ((newdata - time) / 1000 / 60 / 60 / 24 > 1) {
+              return `${Math.floor((newdata - time) / 1000 / 60/60/24)}天前`
+            }
+            if ((newdata - time) / 1000 / 60 / 60 > 1) {
+              return `${Math.floor((newdata - time) / 1000 / 60/60)}小时前`
+            } else {
+              return `${Math.floor((newdata - time) / 1000 / 60)}分钟前`
+            }
+
+          } else {
+            return '刚刚'
+          }
+        }
+      }
     },
     methods: {
       ...mapActions({
@@ -114,16 +134,16 @@
               // this.scroll.refresh();
               // console.log("下拉刷新成功")
             }
-            //上拉加载 总高度>下拉的高度+10 触发加载更多
+            //上拉加载 总高度>上拉的高度+30 触发加载更多
             if (this.scroll.maxScrollY > pos.y + 30) {
               let sum = this.cont
-              this.cont = sum * 2;
+              this.cont = sum += 5;
               //使用refresh 方法 来更新scroll  解决无法滚动的问题
               this.scroll.refresh()
             }
           })
         });
-      }
+      },
     }
   }
 </script>
@@ -149,9 +169,11 @@
         color: #fff;
       }
 
-      >img {
+      iframe {
+        height: 210px;
         width: 100%;
         display: block;
+        z-index: 10;
       }
     }
   }
@@ -186,6 +208,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 999;
 
     p {
       color: #fff;
@@ -220,6 +243,7 @@
     height: 70%;
     position: fixed;
     bottom: -100%;
+    z-index: 9999;
     left: 0;
     background: rgba(0, 0, 0, .7);
     border-radius: .2rem .2rem 0 0;

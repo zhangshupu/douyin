@@ -3,9 +3,9 @@ const state = {
   list: {}
 }
 const mutations = {
-  updataData(state, payload){
+  updataData(state, payload) {
     console.log(payload)
-    state.list=payload
+    state.list = payload
   },
   changePinglun(state, payload) {
     state.list.isShow = !state.list.isShow
@@ -26,7 +26,7 @@ const mutations = {
         name: '呵呵',
         text: payload,
         dianzan: 0,
-        time: '刚刚',
+        time: +new Date,
         isSelect: true
       }
       arr.unshift(obj);
@@ -46,10 +46,12 @@ const mutations = {
   }
 }
 const actions = {
-  getData({commit}) {
+  getData({
+    commit
+  }) {
     axios('https://www.easy-mock.com/mock/5bd5983582302f7129a27f94/example/api')
       .then(res => {
-        commit('updataData',res.data)
+        commit('updataData', res.data)
       })
   }
 }
