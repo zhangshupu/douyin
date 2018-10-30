@@ -60,11 +60,9 @@
         <span @click="fabu(value)">发布</span>
       </div>
     </div>
-    <div class="xing" ref="xing" v-if="isxingshow" :style="style">
-      <em v-for="(item,index) in imgList" :key="index">
-        {{item}}
-      </em>
-    </div>
+    <em class="donghua" :style="style" v-for="(item,index) in imgList" :key="index">
+      {{item}}
+    </em>
   </div>
 </template>
 
@@ -173,21 +171,24 @@
         });
       },
       clickDH(e) {
-        this.isxingshow = true
         let time2 = +new Date()
         if (time2 - this.time < 300) {
           this.style = {
-            top: `${e.pageY-50}px`,
+            top: `${e.pageY-110}px`,
             left: `${e.pageX-50}px`,
           }
           this.imgList.push('♥')
           this.time = new Date()
-          setTimeout(() => {
-            this.isxingshow = false
-            this.imgList = []
-          }, 2000)
+          this.$nextTick(() => { 
+            document.querySelectorAll('.donghua').forEach((element, index) => {
+              element.addEventListener("animationend", function (e) {
+                if (element.parentNode) {
+                  element.parentNode.removeChild(element)
+                }
+              }, false)
+            })
+          });
         } else {
-          this.isxingshow = false
           this.imgList = []
           this.time = new Date()
         }
@@ -427,22 +428,15 @@
     bottom: 0;
   }
 
-  .xing {
-    width: 2rem;
-    height: 2rem;
+  .donghua {
     position: absolute;
-    opacity: 1;
-
-    >em {
-      position: absolute;
-      font-size: 3rem;
-      color: #f00;
-      float: left;
-      top: -1.6rem;
-      left: .04rem;
-      animation: xing 1s forwards;
-    }
+    font-size: 3rem;
+    color: #f00;
+    float: left;
+    animation: xing 1s forwards;
   }
+
+  // }
 
   @keyframes xing {
     0% {
